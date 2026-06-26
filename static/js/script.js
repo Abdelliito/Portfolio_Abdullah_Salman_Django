@@ -7,13 +7,16 @@
 
 /* ─── TYPING ANIMATION ───────────────────────────────────── */
 const typingEl = document.getElementById('typingText');
-const roles = [
+const typingRolesData = document.getElementById('typingRolesData');
+const defaultRoles = [
   'MERN Stack Developer',
   'React.js Engineer',
   'Full-Stack Developer',
   'CS Student @ UMT',
   'Frontend Developer',
 ];
+const parsedRoles = typingRolesData ? JSON.parse(typingRolesData.textContent) : [];
+const roles = parsedRoles.length ? parsedRoles : defaultRoles;
 let roleIdx = 0, charIdx = 0, isDeleting = false;
 
 function typeLoop() {
@@ -161,93 +164,23 @@ filterBtns.forEach(btn => {
 });
 
 /* ─── PROJECT MODAL ──────────────────────────────────────── */
-const projects = [
-  {
-    title: 'Vendora',
-    cat: 'Full Stack · MERN',
-    icon: 'fas fa-shopping-cart',
-    desc: 'A full-stack multi-vendor e-commerce platform enabling multiple vendors to sell products in a unified marketplace. Built end-to-end with the MERN stack, featuring a complete role-based ecosystem for Admin, Vendor, and Customer users.',
-    features: [
-      'Role-based access control (Admin, Vendor, Customer)',
-      'JWT authentication with secure login / logout',
-      'Vendor dashboard: product management, inventory, orders',
-      'Customer dashboard: browsing, cart, and purchases',
-      'Admin panel: vendor oversight and platform monitoring',
-      'Cloudinary integration for image storage',
-      'Frontend on Vercel, backend on Render',
-    ],
-    tech: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'JWT', 'Cloudinary', 'Vercel', 'Render'],
-    github: 'https://github.com/Abdelliito/Vendora_Frontend.git',
-    live: 'https://vendora-frontend-six.vercel.app/',
-  },
-  {
-    title: 'TheXI — World Cup 2026 Tracker',
-    cat: 'Frontend · API Integration',
-    icon: 'fas fa-futbol',
-    desc: 'A modern web application for tracking World Cup 2026 matches, teams, standings, and brackets in real time. Built with React.js and Vite, it offers a responsive and performant experience deployed on Vercel.',
-    features: [
-      'Live match fixtures and schedules',
-      'Team details and group standings',
-      'Knockout stage bracket visualization',
-      'Real-time data fetching via Axios',
-      'Optimized state management with TanStack React Query',
-      'Responsive UI deployed on Vercel',
-    ],
-    tech: ['React.js', 'Vite', 'Tailwind CSS', 'Axios', 'TanStack Query', 'Vercel'],
-    github: 'https://github.com/Abdelliito/TheXi.git',
-    live: 'https://the-xi-jade.vercel.app/',
-  },
-  {
-    title: 'Hate Speech Detection Model',
-    cat: 'Machine Learning · NLP',
-    icon: 'fas fa-brain',
-    desc: 'A machine learning model trained on real Twitter/X data to classify offensive vs non-offensive content. Developed as part of an AI course, it applies NLP concepts to a real-world social media problem.',
-    features: [
-      'Twitter (X) API for data collection',
-      'Lexicon-based feature engineering',
-      'Data preprocessing and feature extraction',
-      'Binary classification: offensive vs non-offensive',
-      'NLP pipeline built in Python',
-    ],
-    tech: ['Python', 'Machine Learning', 'NLP', 'Twitter API', 'scikit-learn'],
-    github: '#',
-    live: null,
-  },
-  {
-    title: 'Portfolio Website',
-    cat: 'Frontend',
-    icon: 'fas fa-user-circle',
-    desc: 'A responsive personal portfolio website showcasing projects and technical skills. Built with React.js and Tailwind CSS, it features smooth animations and clean design aesthetics across all screen sizes.',
-    features: [
-      'Responsive across mobile, tablet, and desktop',
-      'Smooth animations and hover interactions',
-      'React.js component architecture',
-      'Tailwind CSS for utility-first styling',
-      'Cross-browser compatible',
-      'Deployed and optimized for production',
-    ],
-    tech: ['React.js', 'Tailwind CSS', 'JavaScript'],
-    github: '#',
-    live: '#',
-  },
-  {
-    title: 'Horror Game',
-    cat: 'Game Development',
-    icon: 'fas fa-ghost',
-    desc: 'A horror-themed game built in Unity with C# scripting, featuring enemy AI, atmospheric lighting, and immersive sound design. The architecture uses modular OOP principles for reusable, maintainable game components.',
-    features: [
-      'Player movement and game mechanics',
-      'Enemy AI with behavioral scripting',
-      'Atmospheric lighting and sound effects',
-      'Multiple designed game levels',
-      'Modular OOP architecture in C#',
-      'Immersive environmental storytelling',
-    ],
-    tech: ['Unity', 'C#', 'OOP', 'Game Design', 'AI Scripting'],
-    github: '#',
-    live: null,
-  },
-];
+const fallbackProjects = [];
+
+const renderedProjects = Array.from(projectCards).map(card => {
+  const githubLink = card.querySelector('.project-footer a .fa-github')?.closest('a');
+  const liveLink = card.querySelector('.project-footer a .fa-external-link-alt')?.closest('a');
+  return {
+    title: card.querySelector('.project-title')?.textContent.trim() || '',
+    cat: card.querySelector('.project-category-tag')?.textContent.trim() || '',
+    icon: 'fas fa-code',
+    desc: card.querySelector('.project-desc')?.textContent.trim() || '',
+    features: [],
+    tech: Array.from(card.querySelectorAll('.project-tech span')).map(tech => tech.textContent.trim()),
+    github: githubLink?.href || '#',
+    live: liveLink?.href || null,
+  };
+});
+const projects = renderedProjects.length ? renderedProjects : fallbackProjects;
 
 const modalOverlay = document.getElementById('modalOverlay');
 const modalClose   = document.getElementById('modalClose');

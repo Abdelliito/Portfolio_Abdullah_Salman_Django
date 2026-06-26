@@ -6,14 +6,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-        content="Abdullah Salman — MERN Stack Developer & CS Student at UMT Lahore. Building modern, scalable web applications." />
+        content="{{ bio.description }}" />
     <meta name="keywords"
-        content="Abdullah Salman, MERN Stack Developer, React Developer, Full Stack, Portfolio, UMT, Lahore" />
-    <meta property="og:title" content="Abdullah Salman | MERN Stack Developer" />
-    <meta property="og:description" content="CS Student & MERN Stack Developer building modern web experiences." />
+        content="{{ bio.name }}, {{ bio.professional_title }}, Portfolio, {{ bio.location }}" />
+    <meta property="og:title" content="{{ bio.name }} | {{ bio.professional_title }}" />
+    <meta property="og:description" content="{{ bio.description }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://abdullahsalman.dev" />
-    <title>Abdullah Salman | MERN Stack Developer</title>
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <title>{{ bio.name }} | {{ bio.professional_title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -28,7 +28,7 @@
     <!-- ========== NAVBAR ========== -->
     <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="#hero" class="nav-logo" aria-label="Abdullah Salman Home">
+            <a href="#hero" class="nav-logo" aria-label="{{ bio.name }} Home">
                 <span class="logo-bracket">&lt;</span>AS<span class="logo-bracket">/&gt;</span>
             </a>
             <ul class="nav-links" id="navLinks" role="menubar">
@@ -67,40 +67,47 @@
                     </span>
                 </h2>
                 <p class="hero-tagline reveal-up" style="--delay:.2s">
-                    CS student at UMT &amp; MERN developer turning ideas into<br>
-                    <strong>production-ready web experiences</strong>.
+                    {{ bio.hero_tagline|safe }}
                 </p>
                 <div class="hero-stats reveal-up" style="--delay:.3s" aria-label="Quick stats">
                     <div class="stat">
-                        <span class="stat-num" data-target="5">0</span>+
+                        <span class="stat-num" data-target="{{ project_count }}">0</span>+
                         <span class="stat-label">Projects</span>
                     </div>
                     <div class="stat-divider" aria-hidden="true"></div>
                     <div class="stat">
-                        <span class="stat-num" data-target="3">0</span>+
+                        <span class="stat-num" data-target="{{ technology_count }}">0</span>+
                         <span class="stat-label">Technologies</span>
                     </div>
                     <div class="stat-divider" aria-hidden="true"></div>
                     <div class="stat">
-                        <span class="stat-num" data-target="1">0</span>
+                        <span class="stat-num" data-target="{{ achievement_count }}">0</span>
                         <span class="stat-label">Certification</span>
                     </div>
                 </div>
                 <div class="hero-buttons reveal-up" style="--delay:.4s">
                     <a href="#projects" class="btn btn-primary">View Projects <i class="fas fa-arrow-right"
                             aria-hidden="true"></i></a>
-                    <a href="{% static 'documents/abdullah_salman_resume (2).pdf' %}" class="btn btn-secondary" download
+                    {% if bio.resume %}
+                    <a href="{{ bio.resume.url }}" class="btn btn-secondary" download
                         aria-label="Download Resume PDF">
                         <i class="fas fa-download" aria-hidden="true"></i> Resume
                     </a>
+                    {% endif %}
                     <a href="#contact" class="btn btn-ghost">Contact Me</a>
                 </div>
                 <div class="hero-socials reveal-up" style="--delay:.5s" aria-label="Social links">
-                    <a href="https://www.linkedin.com/in/abdullah-salman-846214377" target="_blank"
+                    {% if bio.linkedin %}
+                    <a href="{{ bio.linkedin }}" target="_blank"
                         rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="https://github.com/Abdelliito" target="_blank" rel="noopener noreferrer"
+                    {% endif %}
+                    {% if bio.github %}
+                    <a href="{{ bio.github }}" target="_blank" rel="noopener noreferrer"
                         aria-label="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="mailto:abdullahsalman029@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    {% endif %}
+                    {% if bio.email %}
+                    <a href="mailto:{{ bio.email }}" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -109,22 +116,20 @@
                     <div class="avatar-ring ring-1"></div>
                     <div class="avatar-ring ring-2"></div>
                     <div class="avatar-placeholder">
-                        <img src="{% static 'images/profile.jpeg' %}" alt="Abdullah Salman" />
+                        {% if bio.profile_image %}
+                        <img src="{{ bio.profile_image.url }}" alt="{{ bio.name }}" />
+                        {% endif %}
 
                     </div>
                     <div class="avatar-badge">
-                        <i class="fas fa-code"></i> Available for work
+                        <i class="fas fa-code"></i> {{ bio.availability_text }}
                     </div>
                 </div>
-                <div class="floating-card card-react">
-                    <i class="fab fa-react spin-slow"></i> React.js
+                {% for skill in skills|slice:":3" %}
+                <div class="floating-card {% cycle 'card-react' 'card-node' 'card-mongo' %}">
+                    <i class="{{ skill.icon|default:'fas fa-code' }}{% if forloop.first %} spin-slow{% endif %}"></i> {{ skill.name }}
                 </div>
-                <div class="floating-card card-node">
-                    <i class="fab fa-node-js"></i> Node.js
-                </div>
-                <div class="floating-card card-mongo">
-                    <i class="fas fa-database"></i> MongoDB
-                </div>
+                {% endfor %}
             </div>
         </div>
 
@@ -145,30 +150,30 @@
                 <div class="about-left reveal-left">
                     <div class="about-image-wrapper glass-card">
                         <div class="about-image-placeholder">
-                            <img src="{% static 'images/profile.jpeg' %}" alt="Abdullah Salman" />
+                            {% if bio.profile_image %}
+                            <img src="{{ bio.profile_image.url }}" alt="{{ bio.name }}" />
+                            {% endif %}
                         </div>
                         <div class="about-info-chips">
-                            <span class="chip"><i class="fas fa-map-marker-alt"></i> Lahore, Pakistan</span>
-                            <span class="chip"><i class="fas fa-graduation-cap"></i> UMT — CS 2027</span>
-                            <span class="chip"><i class="fas fa-briefcase"></i> Open to opportunities</span>
+                            {% if bio.location %}
+                            <span class="chip"><i class="fas fa-map-marker-alt"></i> {{ bio.location }}</span>
+                            {% endif %}
+                            {% if current_education %}
+                            <span class="chip"><i class="fas fa-graduation-cap"></i> {{ current_education.degree }} {{ current_education.duration }}</span>
+                            {% endif %}
+                            {% if bio.availability_text %}
+                            <span class="chip"><i class="fas fa-briefcase"></i> {{ bio.availability_text }}</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
 
                 <div class="about-right reveal-right">
                     <p class="about-summary">
-                        I'm a <strong>Computer Science student at UMT Lahore</strong> with a passion for building
-                        full-stack web
-                        applications that solve real problems. My core stack is <strong>MERN (MongoDB, Express.js,
-                            React.js,
-                            Node.js)</strong>,
-                        and I'm always expanding into adjacent technologies like Next.js, FastAPI, and machine learning.
+                        {{ bio.about_paragraph_1|safe }}
                     </p>
                     <p class="about-summary">
-                        Outside of coursework, I lead web development initiatives for the <strong>Inter AI Club at
-                            UMT</strong>,
-                        build freelance projects for real clients, and compete in university coding competitions.
-                        I care deeply about clean architecture, thoughtful UI, and code that actually ships.
+                        {{ bio.about_paragraph_2|safe }}
                     </p>
 
                     <div class="about-cards">
@@ -176,17 +181,14 @@
                             <i class="fas fa-bullseye"></i>
                             <div>
                                 <h4>Career Objective</h4>
-                                <p>Land a full-stack or frontend developer role where I can ship meaningful products and
-                                    grow alongside
-                                    a strong engineering team.</p>
+                                <p>{{ bio.career_objective }}</p>
                             </div>
                         </div>
                         <div class="about-card glass-card">
                             <i class="fas fa-lightbulb"></i>
                             <div>
                                 <h4>Strengths</h4>
-                                <p>Quick learner · Strong problem-solver · Team collaborator · Pragmatic about shipping
-                                </p>
+                                <p>{{ bio.strengths|safe }}</p>
                             </div>
                         </div>
                     </div>
@@ -205,141 +207,40 @@
 
             <div class="skills-grid">
 
-                <!-- Frontend -->
-                <div class="skill-category glass-card reveal-up">
+                {% for category in skill_categories %}
+                <div class="skill-category glass-card reveal-up"{% if not forloop.first %} style="--delay:.{{ forloop.counter0 }}s"{% endif %}>
                     <div class="skill-cat-header">
-                        <i class="fas fa-paint-brush"></i>
-                        <h3>Frontend</h3>
+                        <i class="{{ category.icon }}"></i>
+                        <h3>{{ category.name }}</h3>
                     </div>
-                    <div class="skill-bars">
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>React.js</span><span class="skill-pct">90%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="90"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>HTML5 / CSS3</span><span class="skill-pct">92%</span>
-                            </div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="92"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>JavaScript (ES6+)</span><span
-                                    class="skill-pct">88%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="88"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>Tailwind CSS</span><span class="skill-pct">88%</span>
-                            </div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="88"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Backend -->
-                <div class="skill-category glass-card reveal-up" style="--delay:.1s">
-                    <div class="skill-cat-header">
-                        <i class="fas fa-server"></i>
-                        <h3>Backend</h3>
-                    </div>
-                    <div class="skill-bars">
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>Node.js</span><span class="skill-pct">82%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="82"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>Express.js</span><span class="skill-pct">80%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="80"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>FastAPI (Python)</span><span class="skill-pct">65%</span>
-                            </div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="65"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>JWT Auth</span><span class="skill-pct">80%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="80"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Database -->
-                <div class="skill-category glass-card reveal-up" style="--delay:.2s">
-                    <div class="skill-cat-header">
-                        <i class="fas fa-database"></i>
-                        <h3>Database</h3>
-                    </div>
-                    <div class="skill-bars">
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>MongoDB</span><span class="skill-pct">82%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="82"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>MySQL</span><span class="skill-pct">75%</span></div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="75"></div>
-                            </div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-bar-label"><span>Database Design</span><span class="skill-pct">75%</span>
-                            </div>
-                            <div class="skill-bar-track">
-                                <div class="skill-bar-fill" data-width="75"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tools -->
-                <div class="skill-category glass-card reveal-up" style="--delay:.3s">
-                    <div class="skill-cat-header">
-                        <i class="fas fa-wrench"></i>
-                        <h3>Tools & Platforms</h3>
-                    </div>
+                    {% if category.value == 'Tools' %}
                     <div class="skill-tags">
-                        <span class="skill-tag"><i class="fab fa-git-alt"></i> Git</span>
-                        <span class="skill-tag"><i class="fab fa-github"></i> GitHub</span>
-                        <span class="skill-tag"><i class="fas fa-code"></i> VS Code</span>
-                        <span class="skill-tag"><i class="fas fa-bolt"></i> Vite</span>
-                        <span class="skill-tag"><i class="fas fa-image"></i> Cloudinary</span>
-                        <span class="skill-tag"><i class="fab fa-python"></i> Python</span>
-                        <span class="skill-tag"><i class="fas fa-cloud"></i> Vercel</span>
-                        <span class="skill-tag"><i class="fas fa-server"></i> Render</span>
-                        <span class="skill-tag"><i class="fas fa-gamepad"></i> Unity</span>
-                        <span class="skill-tag"><i class="fas fa-hashtag"></i> C#</span>
+                        {% for skill in category.skills %}
+                        <span class="skill-tag"><i class="{{ skill.icon|default:'fas fa-code' }}"></i> {{ skill.name }}</span>
+                        {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="skill-bars">
+                        {% for skill in category.skills %}
+                        <div class="skill-bar-item">
+                            <div class="skill-bar-label"><span>{{ skill.name }}</span><span class="skill-pct">{{ skill.percentage }}%</span></div>
+                            <div class="skill-bar-track">
+                                <div class="skill-bar-fill" data-width="{{ skill.percentage }}"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
+                {% endfor %}
 
             </div>
 
             <!-- Tech pill cloud -->
             <div class="tech-cloud reveal-up" style="--delay:.2s" aria-label="All technologies">
-                <span class="tech-pill active">MERN Stack</span>
-                <span class="tech-pill">Next.js</span>
-                <span class="tech-pill">TanStack Query</span>
-                <span class="tech-pill">Axios</span>
-                <span class="tech-pill">REST APIs</span>
-                <span class="tech-pill">Machine Learning</span>
-                <span class="tech-pill">DSA</span>
-                <span class="tech-pill">OOP</span>
-                <span class="tech-pill">C/C++</span>
-                <span class="tech-pill">SQL</span>
+                {% for skill in skills %}
+                <span class="tech-pill{% if forloop.first %} active{% endif %}">{{ skill.name }}</span>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -354,39 +255,39 @@
 
             {% for exp in experiences %}
 
-<div class="timeline-item reveal-left">
+            <div class="timeline-item reveal-left">
 
-    <div class="timeline-dot">
-        <i class="fas fa-briefcase"></i>
-    </div>
+                <div class="timeline-dot">
+                    <i class="fas fa-briefcase"></i>
+                </div>
 
-    <div class="timeline-card glass-card">
+                <div class="timeline-card glass-card">
 
-        <div class="timeline-header">
+                    <div class="timeline-header">
 
-            <div>
+                        <div>
 
-                <h3 class="timeline-role">
-                    {{ exp.role }}
-                </h3>
+                            <h3 class="timeline-role">
+                                {{ exp.role }}
+                            </h3>
 
-                <p class="timeline-company">
-                    {{ exp.company }}
-                </p>
+                            <p class="timeline-company">
+                                {{ exp.company }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        {{ exp.description }}
+                    </p>
+
+                </div>
 
             </div>
 
-        </div>
-
-        <p>
-            {{ exp.description }}
-        </p>
-
-    </div>
-
-</div>
-
-{% endfor %}
+            {% endfor %}
         </div>
     </section>
 
@@ -408,135 +309,73 @@
 
             <div class="projects-grid" id="projectsGrid">
 
-                <!-- Vendora -->
-                <article class="project-card glass-card" data-category="fullstack" data-project="0">
+                {% for project in projects %}
+
+                <article class="project-card glass-card" data-category="{{ project.category|lower }}"
+                    data-project="{{ forloop.counter0 }}">
+
                     <div class="project-img">
-                        <div class="project-img-placeholder"><i class="fas fa-shopping-cart"></i></div>
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                        {% else %}
+                        <div class="project-img-placeholder">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        {% endif %}
+
                         <div class="project-overlay">
-                            <button class="btn-icon" onclick="openModal(0)" aria-label="View Vendora details"><i
-                                    class="fas fa-expand"></i></button>
+                            <button class="btn-icon" onclick="openModal({{ forloop.counter0 }})">
+                                <i class="fas fa-expand"></i>
+                            </button>
                         </div>
                     </div>
+
                     <div class="project-body">
-                        <div class="project-category-tag">Full Stack · MERN</div>
-                        <h3 class="project-title">Vendora</h3>
-                        <p class="project-desc">Multi-vendor e-commerce platform with role-based access for Admin,
-                            Vendor &amp;
-                            Customer. Built end-to-end on the MERN stack.</p>
-                        <div class="project-tech">
-                            <span>MongoDB</span><span>Express</span><span>React</span><span>Node</span><span>JWT</span><span>Cloudinary</span>
+
+                        <div class="project-category-tag">
+                            {{ project.category }}
                         </div>
+
+                        <h3 class="project-title">
+                            {{ project.title }}
+                        </h3>
+
+                        <p class="project-desc">
+                            {{ project.description }}
+                        </p>
+
+                        <div class="project-tech">
+                            {% for tech in project.technologies.all %}
+                            <span>{{ tech.name }}</span>
+                            {% endfor %}
+                        </div>
+
                     </div>
+
                     <div class="project-footer">
-                        <a href="https://github.com/Abdelliito/Vendora_Frontend.git" class="btn-sm" target="_blank"
-                            rel="noopener" aria-label="Vendora GitHub"><i class="fab fa-github"></i> Code</a>
-                        <a href="https://vendora-frontend-six.vercel.app/" class="btn-sm btn-sm-primary" target="_blank"
-                            rel="noopener" aria-label="Vendora Live Demo"><i class="fas fa-external-link-alt"></i>
-                            Live</a>
+
+                        {% if project.github_link %}
+                        <a href="{{ project.github_link }}" class="btn-sm" target="_blank">
+
+                            <i class="fab fa-github"></i>
+                            Code
+                        </a>
+                        {% endif %}
+
+                        {% if project.live_link %}
+                        <a href="{{ project.live_link }}" class="btn-sm btn-sm-primary" target="_blank">
+
+                            <i class="fas fa-external-link-alt"></i>
+                            Live
+                        </a>
+                        {% endif %}
+
                     </div>
+
                 </article>
 
-                <!-- TheXI -->
-                <article class="project-card glass-card" data-category="frontend" data-project="1">
-                    <div class="project-img">
-                        <div class="project-img-placeholder"><i class="fas fa-futbol"></i></div>
-                        <div class="project-overlay">
-                            <button class="btn-icon" onclick="openModal(1)" aria-label="View TheXI details"><i
-                                    class="fas fa-expand"></i></button>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <div class="project-category-tag">Frontend · API</div>
-                        <h3 class="project-title">TheXI</h3>
-                        <p class="project-desc">World Cup 2026 football tracking app with real-time fixtures, standings,
-                            brackets
-                            &amp; match schedules. Deployed on Vercel.</p>
-                        <div class="project-tech">
-                            <span>React</span><span>Vite</span><span>Tailwind</span><span>Axios</span><span>TanStack
-                                Query</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://github.com/Abdelliito/TheXi.git" class="btn-sm" target="_blank"
-                            rel="noopener"><i class="fab fa-github"></i> Code</a>
-                        <a href="https://the-xi-jade.vercel.app/" class="btn-sm btn-sm-primary" target="_blank"
-                            rel="noopener"><i class="fas fa-external-link-alt"></i> Live</a>
-                    </div>
-                </article>
+                {% endfor %}
 
-                <!-- Hate Speech -->
-                <article class="project-card glass-card" data-category="ml" data-project="2">
-                    <div class="project-img">
-                        <div class="project-img-placeholder"><i class="fas fa-brain"></i></div>
-                        <div class="project-overlay">
-                            <button class="btn-icon" onclick="openModal(2)" aria-label="View ML project details"><i
-                                    class="fas fa-expand"></i></button>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <div class="project-category-tag">ML · NLP</div>
-                        <h3 class="project-title">Hate Speech Detector</h3>
-                        <p class="project-desc">ML model trained on Twitter/X data using lexicon-based features to
-                            classify
-                            offensive vs non-offensive content with NLP techniques.</p>
-                        <div class="project-tech">
-                            <span>Python</span><span>Machine Learning</span><span>NLP</span><span>Twitter API</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="#" class="btn-sm" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
-                    </div>
-                </article>
-
-                <!-- Portfolio -->
-                <article class="project-card glass-card" data-category="frontend" data-project="3">
-                    <div class="project-img">
-                        <div class="project-img-placeholder"><i class="fas fa-user-circle"></i></div>
-                        <div class="project-overlay">
-                            <button class="btn-icon" onclick="openModal(3)"
-                                aria-label="View Portfolio project details"><i class="fas fa-expand"></i></button>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <div class="project-category-tag">Frontend</div>
-                        <h3 class="project-title">Portfolio Website</h3>
-                        <p class="project-desc">Responsive portfolio website with modern UI/UX, smooth animations, and
-                            cross-browser
-                            compatibility built with React.js.</p>
-                        <div class="project-tech">
-                            <span>React</span><span>Tailwind CSS</span><span>JavaScript</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="#" class="btn-sm" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
-                        <a href="#" class="btn-sm btn-sm-primary" target="_blank" rel="noopener"><i
-                                class="fas fa-external-link-alt"></i> Live</a>
-                    </div>
-                </article>
-
-                <!-- Horror Game -->
-                <article class="project-card glass-card" data-category="other" data-project="4">
-                    <div class="project-img">
-                        <div class="project-img-placeholder"><i class="fas fa-ghost"></i></div>
-                        <div class="project-overlay">
-                            <button class="btn-icon" onclick="openModal(4)" aria-label="View Horror Game details"><i
-                                    class="fas fa-expand"></i></button>
-                        </div>
-                    </div>
-                    <div class="project-body">
-                        <div class="project-category-tag">Game Dev</div>
-                        <h3 class="project-title">Horror Game</h3>
-                        <p class="project-desc">Unity horror game with enemy AI, atmospheric lighting, immersive sound
-                            design, and
-                            modular OOP architecture built in C#.</p>
-                        <div class="project-tech">
-                            <span>Unity</span><span>C#</span><span>OOP</span><span>Game Design</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="#" class="btn-sm" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
-                    </div>
-                </article>
 
             </div>
         </div>
@@ -571,49 +410,22 @@
 
             <div class="achievements-grid">
 
-                <div class="achievement-card glass-card reveal-up">
-                    <div class="achievement-icon"><i class="fas fa-certificate"></i></div>
+                {% for achievement in achievements %}
+                <div class="achievement-card glass-card reveal-up"{% if not forloop.first %} style="--delay:.{{ forloop.counter0 }}s"{% endif %}>
+                    <div class="achievement-icon{% if 'trophy' in achievement.icon %} achievement-icon--trophy{% elif 'star' in achievement.icon %} achievement-icon--star{% endif %}"><i class="{{ achievement.icon }}"></i></div>
                     <div class="achievement-body">
-                        <h3>MERN Stack Development</h3>
-                        <p class="achievement-org"><i class="fas fa-building"></i> Web Ascend, co-powered by IEEE UMT
-                            Branch</p>
-                        <p class="achievement-detail">Bootcamp credential demonstrating proficiency in MERN stack
-                            development and
-                            full-stack web application design.</p>
+                        <h3>{{ achievement.title }}</h3>
+                        <p class="achievement-org"><i class="fas fa-building"></i> {{ achievement.organization }}</p>
+                        <p class="achievement-detail">{{ achievement.description }}</p>
                         <div class="achievement-meta">
-                            <span><i class="fas fa-calendar"></i> March 2026</span>
-                            <span class="achievement-cred">No. WA-P2-2026-001</span>
+                            <span><i class="fas fa-calendar"></i> {{ achievement.date }}</span>
+                            {% if achievement.credential %}
+                            <span class="achievement-cred">{{ achievement.credential }}</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-
-                <div class="achievement-card glass-card reveal-up" style="--delay:.1s">
-                    <div class="achievement-icon achievement-icon--trophy"><i class="fas fa-trophy"></i></div>
-                    <div class="achievement-body">
-                        <h3>University Coding Competition</h3>
-                        <p class="achievement-org"><i class="fas fa-university"></i> UMT, Lahore</p>
-                        <p class="achievement-detail">Participated in university-level coding competition, solving
-                            algorithmic
-                            challenges and competitive programming problems.</p>
-                        <div class="achievement-meta">
-                            <span><i class="fas fa-calendar"></i> 2024</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="achievement-card glass-card reveal-up" style="--delay:.2s">
-                    <div class="achievement-icon achievement-icon--star"><i class="fas fa-star"></i></div>
-                    <div class="achievement-body">
-                        <h3>Strong Academic Performance</h3>
-                        <p class="achievement-org"><i class="fas fa-university"></i> UMT — CS Program</p>
-                        <p class="achievement-detail">Demonstrated strong academic performance in Data Structures &amp;
-                            Algorithms,
-                            Database Systems, and Software Engineering.</p>
-                        <div class="achievement-meta">
-                            <span><i class="fas fa-calendar"></i> 2023 – Present</span>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
 
             </div>
         </div>
@@ -627,42 +439,42 @@
                 <h2 class="section-title" id="edu-heading">Education</h2>
             </div>
 
-           <div class="edu-timeline">
+            <div class="edu-timeline">
 
-{% for edu in education %}
+                {% for edu in education %}
 
-<div class="edu-item reveal-up">
-    <div class="edu-dot">
-        <i class="fas fa-graduation-cap"></i>
-    </div>
+                <div class="edu-item reveal-up">
+                    <div class="edu-dot">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
 
-    <div class="edu-card glass-card">
+                    <div class="edu-card glass-card">
 
-        <div class="edu-header">
+                        <div class="edu-header">
 
-            <div>
-                <h3>{{ edu.degree }}</h3>
+                            <div>
+                                <h3>{{ edu.degree }}</h3>
 
-                <p class="edu-uni">
-                    {{ edu.institution }}
-                </p>
+                                <p class="edu-uni">
+                                    {{ edu.institution }}
+                                </p>
+                            </div>
+
+                            <div class="edu-badge-wrap">
+                                <span class="edu-badge">
+                                    {{ edu.duration }}
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
             </div>
-
-            <div class="edu-badge-wrap">
-                <span class="edu-badge">
-                    {{ edu.duration }}
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-{% endfor %}
-
-</div>
         </div>
     </section>
 
@@ -678,60 +490,20 @@
 
             <div class="services-grid">
 
-                <div class="service-card glass-card reveal-up">
-                    <div class="service-icon"><i class="fas fa-laptop-code"></i></div>
-                    <h3>Frontend Development</h3>
-                    <p>Pixel-perfect, accessible UIs built with React.js and Tailwind CSS — performant, responsive, and
-                        cross-browser compatible.</p>
+                {% for service in services %}
+                <div class="service-card glass-card reveal-up"{% if not forloop.first %} style="--delay:.{{ forloop.counter0 }}s"{% endif %}>
+                    <div class="service-icon{% if forloop.counter == 2 %} service-icon--secondary{% elif forloop.counter == 3 %} service-icon--accent{% elif forloop.counter == 4 %} service-icon--warm{% endif %}"><i class="{{ service.icon }}"></i></div>
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.description }}</p>
+                    {% if service.features.all %}
                     <ul class="service-list">
-                        <li>React.js SPAs</li>
-                        <li>Responsive design</li>
-                        <li>Modern UI/UX</li>
-                        <li>Performance optimization</li>
+                        {% for feature in service.features.all %}
+                        <li>{{ feature.text }}</li>
+                        {% endfor %}
                     </ul>
+                    {% endif %}
                 </div>
-
-                <div class="service-card glass-card reveal-up" style="--delay:.1s">
-                    <div class="service-icon service-icon--secondary"><i class="fas fa-layer-group"></i></div>
-                    <h3>MERN Stack Development</h3>
-                    <p>Full-stack applications built on MongoDB, Express.js, React.js, and Node.js — from database
-                        design to
-                        deployment.</p>
-                    <ul class="service-list">
-                        <li>Full-stack architecture</li>
-                        <li>REST API design</li>
-                        <li>Auth & role-based access</li>
-                        <li>Cloud deployment</li>
-                    </ul>
-                </div>
-
-                <div class="service-card glass-card reveal-up" style="--delay:.2s">
-                    <div class="service-icon service-icon--accent"><i class="fas fa-plug"></i></div>
-                    <h3>API Integration</h3>
-                    <p>Third-party API integration, real-time data fetching, and optimized state management with
-                        TanStack Query
-                        &amp; Axios.</p>
-                    <ul class="service-list">
-                        <li>Third-party API integration</li>
-                        <li>Real-time data fetching</li>
-                        <li>TanStack Query</li>
-                        <li>Cloudinary media</li>
-                    </ul>
-                </div>
-
-                <div class="service-card glass-card reveal-up" style="--delay:.3s">
-                    <div class="service-icon service-icon--warm"><i class="fas fa-mobile-alt"></i></div>
-                    <h3>Responsive Web Development</h3>
-                    <p>Mobile-first websites and landing pages that look sharp and load fast across all screen sizes and
-                        devices.
-                    </p>
-                    <ul class="service-list">
-                        <li>Mobile-first approach</li>
-                        <li>Landing pages</li>
-                        <li>Cross-browser support</li>
-                        <li>Vercel / Render deployment</li>
-                    </ul>
-                </div>
+                {% endfor %}
 
             </div>
         </div>
@@ -750,43 +522,60 @@
             <div class="contact-grid">
 
                 <div class="contact-info reveal-left">
+                    {% if bio.email %}
                     <div class="contact-item glass-card">
                         <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                         <div>
                             <h4>Email</h4>
-                            <a href="mailto:abdullahsalman029@gmail.com">abdullahsalman029@gmail.com</a>
+                            <a href="mailto:{{ bio.email }}">{{ bio.email }}</a>
                         </div>
                     </div>
+                    {% endif %}
+                    {% if bio.phone %}
                     <div class="contact-item glass-card">
                         <div class="contact-icon"><i class="fas fa-phone"></i></div>
                         <div>
                             <h4>Phone</h4>
-                            <a href="tel:+923218457902">+92 321 845 7902</a>
+                            <a href="tel:{{ phone_href }}">{{ bio.phone }}</a>
                         </div>
                     </div>
+                    {% endif %}
+                    {% if bio.linkedin %}
                     <div class="contact-item glass-card">
                         <div class="contact-icon"><i class="fab fa-linkedin"></i></div>
                         <div>
                             <h4>LinkedIn</h4>
-                            <a href="https://www.linkedin.com/in/abdullah-salman-846214377" target="_blank"
-                                rel="noopener">linkedin.com/in/abdullah-salman</a>
+                            <a href="{{ bio.linkedin }}" target="_blank"
+                                rel="noopener">{{ linkedin_label }}</a>
                         </div>
                     </div>
+                    {% endif %}
+                    {% if bio.github %}
                     <div class="contact-item glass-card">
                         <div class="contact-icon"><i class="fab fa-github"></i></div>
                         <div>
                             <h4>GitHub</h4>
-                            <a href="https://github.com/Abdelliito" target="_blank"
-                                rel="noopener">github.com/Abdelliito</a>
+                            <a href="{{ bio.github }}" target="_blank"
+                                rel="noopener">{{ github_label }}</a>
                         </div>
                     </div>
+                    {% endif %}
+                    {% if bio.location %}
+                    <div class="contact-item glass-card">
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <h4>Location</h4>
+                            <span>{{ bio.location }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <div class="contact-form-wrapper reveal-right">
                     <form class="contact-form glass-card" id="contactForm" novalidate aria-label="Contact form">
                         <div class="form-group">
                             <label for="contactName">Full Name</label>
-                            <input type="text" id="contactName" name="name" placeholder="Abdullah Salman"
+                            <input type="text" id="contactName" name="name" placeholder="{{ bio.name }}"
                                 autocomplete="name" />
                             <span class="form-error" id="nameError" role="alert"></span>
                         </div>
@@ -831,14 +620,20 @@
                     <a href="#hero" class="nav-logo footer-logo">
                         <span class="logo-bracket">&lt;</span>AS<span class="logo-bracket">/&gt;</span>
                     </a>
-                    <p>Building modern web experiences with clean code and genuine care for the user.</p>
+                    <p>{{ bio.short_description }}</p>
                     <div class="footer-socials">
-                        <a href="https://www.linkedin.com/in/abdullah-salman-846214377" target="_blank" rel="noopener"
+                        {% if bio.linkedin %}
+                        <a href="{{ bio.linkedin }}" target="_blank" rel="noopener"
                             aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://github.com/Abdelliito" target="_blank" rel="noopener" aria-label="GitHub"><i
+                        {% endif %}
+                        {% if bio.github %}
+                        <a href="{{ bio.github }}" target="_blank" rel="noopener" aria-label="GitHub"><i
                                 class="fab fa-github"></i></a>
-                        <a href="mailto:abdullahsalman029@gmail.com" aria-label="Email"><i
+                        {% endif %}
+                        {% if bio.email %}
+                        <a href="mailto:{{ bio.email }}" aria-label="Email"><i
                                 class="fas fa-envelope"></i></a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -855,26 +650,31 @@
                 <div class="footer-links-col">
                     <h4>Projects</h4>
                     <ul>
-                        <li><a href="#projects">Vendora</a></li>
-                        <li><a href="#projects">TheXI</a></li>
-                        <li><a href="#projects">Hate Speech Detector</a></li>
-                        <li><a href="#projects">Horror Game</a></li>
+                        {% for project in projects|slice:":4" %}
+                        <li><a href="#projects">{{ project.title }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
 
                 <div class="footer-links-col">
                     <h4>Contact</h4>
                     <ul>
-                        <li><a href="mailto:abdullahsalman029@gmail.com">abdullahsalman029@gmail.com</a></li>
-                        <li><a href="https://www.linkedin.com/in/abdullah-salman-846214377" target="_blank"
+                        {% if bio.email %}
+                        <li><a href="mailto:{{ bio.email }}">{{ bio.email }}</a></li>
+                        {% endif %}
+                        {% if bio.linkedin %}
+                        <li><a href="{{ bio.linkedin }}" target="_blank"
                                 rel="noopener">LinkedIn</a></li>
-                        <li><a href="https://github.com/Abdelliito" target="_blank" rel="noopener">GitHub</a></li>
+                        {% endif %}
+                        {% if bio.github %}
+                        <li><a href="{{ bio.github }}" target="_blank" rel="noopener">GitHub</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; <span id="footerYear"></span> Abdullah Salman.</p>
+                <p>&copy; <span id="footerYear"></span> {{ bio.name }}.</p>
                 <p class="footer-stack">Built with HTML · CSS · JS</p>
             </div>
         </div>
@@ -884,6 +684,7 @@
         </button>
     </footer>
 
+    {{ typing_roles|json_script:"typingRolesData" }}
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 
